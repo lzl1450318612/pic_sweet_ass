@@ -10,6 +10,7 @@ import (
 	"math"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	"sync"
 
@@ -19,6 +20,11 @@ import (
 const maxGoroutineNum = 10
 
 func Compress(originPath string) error {
+	originPath, err := filepath.Abs(originPath)
+	if err != nil {
+		return err
+	}
+
 	config, err := GetConfig()
 	if err != nil {
 		return err
