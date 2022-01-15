@@ -10,13 +10,11 @@ import (
 )
 
 type Config struct {
-	Scale  float32 `yaml:"scale"`  // 比例缩放（使用此值时宽高失效）
-	Width  uint    `yaml:"width"`  // 缩放后的宽
-	Height uint    `yaml:"height"` // 缩放后的高
+	Scale float32 `yaml:"scale"` // 比例缩放（小数）
 }
 
 func CreateConfFile() error {
-	configStr := "scale: 1\nwidth: 0\nheight: 0\n"
+	configStr := "scale: 1"
 
 	err := ioutil.WriteFile("./ass_conf.yaml", []byte(configStr), 0666)
 	if err != nil {
@@ -32,9 +30,7 @@ func GetConfig() (*Config, error) {
 	if err != nil || f == nil {
 		fmt.Println("no ass_conf.yaml file, use default config")
 		conf = &Config{
-			Scale:  1,
-			Width:  0,
-			Height: 0,
+			Scale: 1,
 		}
 		return conf, err
 	}
@@ -43,9 +39,7 @@ func GetConfig() (*Config, error) {
 	if err != nil {
 		fmt.Println("ass_conf.yaml file incorrect, use default config")
 		conf = &Config{
-			Scale:  1,
-			Width:  0,
-			Height: 0,
+			Scale: 1,
 		}
 		return conf, err
 	}
@@ -54,9 +48,7 @@ func GetConfig() (*Config, error) {
 	if err != nil {
 		fmt.Println("ass_conf.yaml file incorrect, use default config")
 		conf = &Config{
-			Scale:  1,
-			Width:  0,
-			Height: 0,
+			Scale: 1,
 		}
 		return conf, err
 	}

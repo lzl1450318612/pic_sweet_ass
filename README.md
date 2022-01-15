@@ -9,12 +9,12 @@ usage:
 生成配置文件：
 
 ```shell
-./pic_sweet_ass -conf init
+./ass -conf init
 ```
 
 压缩图片：
 
 ```shell
-./pic_sweet_ass -c 图片所在文件夹
+./ass -c 图片所在文件夹
 ```
 

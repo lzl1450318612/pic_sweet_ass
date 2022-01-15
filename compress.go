@@ -132,8 +132,8 @@ func handleImg(ctx AssContext, wg *sync.WaitGroup, imgNames []string, originPath
 			continue
 		}
 
-		width := ctx.conf.Width
-		height := ctx.conf.Height
+		width := uint(img.Bounds().Dx())
+		height := uint(img.Bounds().Dy())
 
 		if ctx.conf.Scale != 0 {
 			sqrt := math.Sqrt(float64(ctx.conf.Scale))
