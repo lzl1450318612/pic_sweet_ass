@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"image"
 	"image/jpeg"
@@ -19,7 +20,7 @@ import (
 
 const maxGoroutineNum = 10
 
-func Compress(originPath string) error {
+func Compress(originPath string, mode AssMode) error {
 	originPath, err := filepath.Abs(originPath)
 	if err != nil {
 		return err
@@ -32,6 +33,7 @@ func Compress(originPath string) error {
 	assContext := AssContext{
 		ctx:  context.TODO(),
 		conf: config,
+		mode: mode,
 	}
 	fileInfos, err := ioutil.ReadDir(originPath)
 	if err != nil {
@@ -135,18 +137,33 @@ func handleImg(ctx AssContext, wg *sync.WaitGroup, imgNames []string, originPath
 		width := uint(img.Bounds().Dx())
 		height := uint(img.Bounds().Dy())
 
-		if ctx.conf.Scale != 0 {
-			sqrt := math.Sqrt(float64(ctx.conf.Scale))
-			width = uint(float64(img.Bounds().Dx()) * sqrt)
-			height = uint(float64(img.Bounds().Dy()) * sqrt)
-		}
+		var targetImg image.Image
 
-		// 压缩图片
-		targetImg := resize.Thumbnail(width, height, img, resize.Lanczos3)
+		switch ctx.mode {
+		case AssModeCompress:
+			if ctx.conf.CompressScale != 0 {
+				sqrt := math.Sqrt(float64(ctx.conf.CompressScale))
+				width = uint(float64(img.Bounds().Dx()) * sqrt)
+				height = uint(float64(img.Bounds().Dy()) * sqrt)
+			}
+			// 压缩图片
+			targetImg = resize.Thumbnail(width, height, img, resize.Lanczos3)
+		case AssModeResize:
+			if ctx.conf.CompressScale != 0 {
+				sqrt := math.Sqrt(float64(ctx.conf.ResizeScale))
+				width = uint(float64(img.Bounds().Dx()) * sqrt)
+				height = uint(float64(img.Bounds().Dy()) * sqrt)
+			}
+			// 裁剪图片
+			targetImg = resize.Resize(width, height, img, resize.Lanczos3)
+		default:
+			panic(errors.New("mode not exists"))
+		}
 
 		// 生成导出后的图片
 		err = saveImg(originPath+"/output", path.Base(file.Name()), targetImg)
 		if err != nil {
+			errChan <- file.Name()
 			continue
 		}
 		successChan <- file.Name()

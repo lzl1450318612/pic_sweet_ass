@@ -10,7 +10,8 @@ import (
 )
 
 type Config struct {
-	Scale float32 `yaml:"scale"` // 比例缩放（小数）
+	CompressScale float32 `yaml:"compress_scale"` // 压缩比例缩放（小数）
+	ResizeScale   float32 `yaml:"resize_scale"`   // 裁剪比例缩放（小数）
 }
 
 func CreateConfFile() error {
@@ -30,7 +31,8 @@ func GetConfig() (*Config, error) {
 	if err != nil || f == nil {
 		fmt.Println("no ass_conf.yaml file, use default config")
 		conf = &Config{
-			Scale: 1,
+			CompressScale: 1,
+			ResizeScale:   1,
 		}
 		return conf, err
 	}
@@ -39,7 +41,8 @@ func GetConfig() (*Config, error) {
 	if err != nil {
 		fmt.Println("ass_conf.yaml file incorrect, use default config")
 		conf = &Config{
-			Scale: 1,
+			CompressScale: 1,
+			ResizeScale:   1,
 		}
 		return conf, err
 	}
@@ -48,7 +51,8 @@ func GetConfig() (*Config, error) {
 	if err != nil {
 		fmt.Println("ass_conf.yaml file incorrect, use default config")
 		conf = &Config{
-			Scale: 1,
+			CompressScale: 1,
+			ResizeScale:   1,
 		}
 		return conf, err
 	}
@@ -71,8 +75,11 @@ func parseConfig(configStr string) (*Config, error) {
 }
 
 func checkConfig(config *Config) error {
-	if config.Scale > 1 || config.Scale < 0 {
-		return errors.New("invalid scale")
+	if config.CompressScale > 1 || config.CompressScale < 0 {
+		return errors.New("invalid compress scale")
+	}
+	if config.ResizeScale > 1 || config.ResizeScale < 0 {
+		return errors.New("invalid compress scale")
 	}
 	return nil
 }
